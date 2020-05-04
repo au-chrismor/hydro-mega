@@ -20,6 +20,20 @@ First, decide which features you wish to use, because there are dependencies.  F
 
 **DO NOT** enable multiple network interfaces, as it won't compile (for now).  GSM is a stub only for now, and when I get my hands on some proper hardware I will give it the attention it deserves.
 
+## ThingSpeak settings
+There are some assumptions around ThingSpeak.  The channel should be set up as follows
+
+Channel | Name | Variable
+--- | --- | ---
+1 | External Temperature | airTemp
+2 | External Humidity | airHumidity
+3 | Fluid Temperature | fluidTemp
+4 | Fluid pH | pH
+5 | Fluid Ec | eC
+6 | Not Used | None
+7 | Not Used | None
+8 | Battery Voltage | vBatt
+
 ## Known Issues
 + You can only have a single network technology enabled.  Later I will get smart and figure out how to deal with better.  But for now, just don't do it.
 + GSM support is non-existent at the moment.
