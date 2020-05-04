@@ -151,7 +151,7 @@ void loop() {
 #endif
 #ifdef _HAS_EC
     eC = (float)analogRead(PIN_EC);
-    if(isnan(pH)) {
+    if(isnan(eC)) {
       Serial.println("Error getting eC");
       eC = 0.0;
     }
