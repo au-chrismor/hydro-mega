@@ -1,4 +1,13 @@
-
+/*
+ * Copyright (C), 2000 Christopher F. Moran
+ * This code controls a simple hydroponic pump for Ebb * Flow operation
+ * 
+ * It is intended to be modular, and features can be added or removed by
+ * defining conditions within sysconfig.h.  The logic behind this structure is
+ * that the final code can get very close to maximum memory on some controllers
+ * which may cause stability problems.
+ */
+ 
 #include "hydro.h"
 
 void setup() {
@@ -61,6 +70,34 @@ void setPump(void) {
 #endif
     mins = 0;
   }
+}
+#endif
+
+#ifdef _HAS_EC
+// Reference
+// https://hackaday.io/project/7008-fly-wars-a-hackers-solution-to-world-hunger/log/24646-three-dollar-ec-ppm-meter-arduino
+float readEc(float fluidTemp) {
+  int r1 = 1000;
+  int rA = 25;
+  float ppmConversion = 0.7;
+  float temperatureCoef = 0.019;
+  float k = 2.88;
+  float raw = 0.0;
+  float vIn = 5.0;
+  float vDrop = 0.0;
+  float rC = 0;
+  float eC = 0.0;
+
+  digitalWrite(EC_POWER_PIN, HIGH); // Power on
+  digitalWrite(EC_SINK_PIN, LOW);
+  raw= analogRead(PIN_EC);
+  raw= analogRead(PIN_EC);  // Needs to be run twice, based on experimental results.  See source article.
+  digitalWrite(EC_POWER_PIN,HIGH);  // Power off
+  vDrop = (vIn * raw) / 1024.0;
+  rC = (vDrop * r1) / (vIn - vDrop) - rA;
+  eC = (1000 / (rC * k)) / (1+ temperatureCoef*(fluidTemp - 25.0));
+
+  return eC;
 }
 #endif
 
@@ -149,8 +186,9 @@ void loop() {
       
     }
 #endif
+#ifdef _HAS_DALLAS
 #ifdef _HAS_EC
-    eC = (float)analogRead(PIN_EC);
+    eC = readEc(fluidTemp);
     if(isnan(eC)) {
       Serial.println("Error getting eC");
       eC = 0.0;
@@ -162,6 +200,7 @@ void loop() {
 #endif
       
     }
+#endif
 #endif
 #ifdef _HAS_VBATT
     vBatt = (float)analogRead(PIN_VBATT) / 1024 * 5.0 * batFactor;

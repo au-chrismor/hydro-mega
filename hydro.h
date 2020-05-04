@@ -1,22 +1,17 @@
 #include "sysconfig.h"
 #ifdef _HAS_THINGSPEAK
-unsigned long channelId = 0;
-const char *writeApiKey = "";
+unsigned long channelId = 104862;
+const char *writeApiKey = "648012BSN3P541U0";
 #include <ThingSpeak.h>
 #endif
 
-#ifdef _HAS_WIFI
-#include <WiFi.h>
-WiFiClient  client;
-#endif
-
 #ifdef _HAS_ETHERNET
-#include <Ethernet.h>
+#include "Ethernet.h"
 byte mac[] = { 0x02, 0x60, 0x8c, 0x01, 0x02, 0x05 };
 IPAddress ip(192, 168, 1, 2);
 IPAddress dns(8, 8, 8, 8);
 #ifndef _HAS_WIRELESS
-EthernetClient client;
+EthernetClient(client);
 #endif
 #endif
 
@@ -36,6 +31,14 @@ OneWire oneWireBus(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWireBus);
 float fluidAlarmLow = 8.0;
 float fluidAlarmHigh = 30.0;
+
+#ifdef _HAS_EC
+#define PIN_EC    A1
+#define EC_POWER_PIN  6
+#define EC_SINK_PIN   7
+
+float readEc(float fluidTemp);
+#endif
 #endif
 
 #ifdef _HAS_PUMP_RELAY
@@ -51,9 +54,6 @@ int idlePump = 1;
 #define PIN_PH    A0
 #endif
 
-#ifdef _HAS_EC
-#define PIN_EC    A1
-#endif
 
 #ifdef _HAS_VBATT
 #define PIN_VBATT    A2
