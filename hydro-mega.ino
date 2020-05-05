@@ -18,9 +18,44 @@ void setup() {
 #ifdef _HAS_LAMP_RELAY
   pinMode(PIN_LAMP, OUTPUT);
 #endif
+
   Serial.begin(115200);
   Serial.println();
+#ifdef _DEBUG  
+  Serial.println("Compiled modules:");
+#ifdef _HAS_THINGSPEAK
+  Serial.println("ThingSpeak");
+#endif
+#ifdef _HAS_ETHERNET
+  Serial.println("Ethernet");
+#endif
+#ifdef _HAS_WIFI_ESP
+  Serial.println("ESP WiFi");
+#endif
+#ifdef _HAS_DALLAS
+  Serial.println("DS18B20");
+#endif
+#ifdef _HAS_DHT
+  Serial.println("DHT");
+#endif
+#ifdef _HAS_PUMP_RELAY
+  Serial.println("Pump Relay");
+#endif
+#ifdef _HAS_LAMP_RELAY
+  Serial.println("Lamp Relay");
+#endif
+#ifdef _HAS_PH
+  Serial.println("pH Sensor");
+#endif
+#ifdef _HAS_EC
+  Serial.println("Ec Sensor");
+#endif
+#ifdef _HAS_VBATT
+  Serial.println("Battery Voltage");
+#endif
+#endif
   Serial.println("Starting up");
+
 #ifdef _HAS_ETHERNET
   Ethernet.init(10);
   if(Ethernet.begin(mac) == 0) {
@@ -38,6 +73,21 @@ void setup() {
   // Allow the Ethernet hardware to start up fully
   delay(1500);
 #endif
+
+#ifdef _HAS_WIFI
+  int wifiStatus = WL_IDLE_STATUS;
+  Serial3.begin(115200);
+  WiFi.init(&Serial3);
+  if(WiFi.status() == WL_NO_SHIELD) {
+    Serial.println("No WiFi Shield");
+    while(true);  // Can't continue
+  }
+  while(wifiStatus != WL_CONNECTED) {
+    wifiStatus = WiFi.begin(ssid, pass);
+    delay(1000);
+  }
+#endif
+
 #ifdef _HAS_DHT
   dht.begin();
 #endif

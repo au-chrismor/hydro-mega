@@ -1,7 +1,7 @@
 #include "sysconfig.h"
 #ifdef _HAS_THINGSPEAK
-unsigned long channelId = 104862;
-const char *writeApiKey = "648012BSN3P541U0";
+unsigned long channelId = 12345678;
+const char *writeApiKey = "ABCDEF12345678";
 #include <ThingSpeak.h>
 #endif
 
@@ -13,6 +13,17 @@ IPAddress dns(8, 8, 8, 8);
 #ifndef _HAS_WIRELESS
 EthernetClient(client);
 #endif
+#endif
+
+#ifdef _HAS_WIFI
+#ifdef _HAS_WIFI_ESP
+#include <WiFiEsp.h>
+#ifndef _HAS_ETHERNET
+WiFiEspClient client;
+#endif
+#endif
+char ssid[] = "SSID";
+char pass[] = "SecurePa5sw0rd!";
 #endif
 
 #ifdef _HAS_DHT
