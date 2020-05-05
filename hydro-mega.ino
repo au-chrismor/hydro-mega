@@ -14,6 +14,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 #ifdef _HAS_PUMP_RELAY
   pinMode(PIN_PUMP, OUTPUT);
+  digitalWrite(PIN_PUMP, RLY_OFF);
 #endif  
 #ifdef _HAS_LAMP_RELAY
   pinMode(PIN_LAMP, OUTPUT);
@@ -175,6 +176,7 @@ void loop() {
 
   if(secs == 59) {
     secs = 0;
+    mins++;
 #ifdef _HAS_PUMP_RELAY
     setPump();
 #endif
