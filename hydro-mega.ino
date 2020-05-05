@@ -11,7 +11,7 @@
 #include "hydro.h"
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
+//  pinMode(LED_BUILTIN, OUTPUT);
 #ifdef _HAS_PUMP_RELAY
   pinMode(PIN_PUMP, OUTPUT);
   digitalWrite(PIN_PUMP, RLY_OFF);
@@ -24,6 +24,9 @@ void setup() {
   Serial.println();
 #ifdef _DEBUG  
   Serial.println("Compiled modules:");
+#ifdef _HAS_SSD1306
+  Serial.println("SSD1306 Display");
+#endif
 #ifdef _HAS_THINGSPEAK
   Serial.println("ThingSpeak");
 #endif
@@ -57,6 +60,16 @@ void setup() {
 #endif
   Serial.println("Starting up");
 
+#ifdef _HAS_SSD1306
+  if(!display.begin(SSD1306_SWITCHCAPVCC)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    while(true);  // Can't continue
+  }
+  display.clearDisplay();
+  display.drawPixel(10, 10, SSD1306_WHITE);
+  display.display();
+#endif
+
 #ifdef _HAS_ETHERNET
   Ethernet.init(10);
   if(Ethernet.begin(mac) == 0) {
@@ -89,21 +102,48 @@ void setup() {
   }
 #endif
 
+#ifdef _HAS_SSD1306
+  display.clearDisplay();
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setCursor(0, 0);     // Start at top-left corner
+  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+  display.println("Started OK");
+  display.display();
+#endif
+
 #ifdef _HAS_DHT
   dht.begin();
+#ifdef _HAS_SSD1306
+  display.println("DHT On");
 #endif
+#endif
+
 #ifdef _HAS_DALLAS
   sensors.begin();
+#ifdef _HAS_SSD1306
+  display.println("18B20 On");
 #endif
+#endif
+
 #ifdef _HAS_THINGSPEAK
   ThingSpeak.begin(client);
+#ifdef _HAS_SSD1306
+  display.println("ThingSpeak On");
+#endif
+#endif
+
+#ifdef _HAS_SSD1306
+  display.display();
 #endif
 }
 
 #ifdef _HAS_PUMP_RELAY
 void setPump(void) {
+#ifdef _DEBUG  
   Serial.println("Checking pump " + String(mins) + " min (" + String(idlePump) + ")");
-  if(idlePump == 0 && mins > 120) {
+#endif  
+  if(idlePump == 0 && mins > _RUN_MINUTES) {
     idlePump = 1;
     Serial.println("Stop Pump");
     digitalWrite(PIN_PUMP, RLY_OFF);
@@ -112,8 +152,8 @@ void setPump(void) {
 #endif
     mins = 0;
   }
-  if(idlePump == 1 && mins > 114) {
-    idlePump = 1;
+  if(idlePump == 1 && mins > _IDLE_MINUTES) {
+    idlePump = 0;
     Serial.println("Start Pump");
     digitalWrite(PIN_PUMP, RLY_ON);
 #ifdef _HAS_THINGSPEAK
@@ -171,7 +211,7 @@ void loop() {
   float vBatt = 12.0;
 #endif  
 
-  digitalWrite(LED_BUILTIN, stat);
+//  digitalWrite(LED_BUILTIN, stat);
   stat = !stat;
 
   if(secs == 59) {
@@ -180,6 +220,16 @@ void loop() {
 #ifdef _HAS_PUMP_RELAY
     setPump();
 #endif
+
+#ifdef _HAS_SSD1306
+  display.clearDisplay();
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setCursor(0, 0);     // Start at top-left corner
+  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+  display.display();
+#endif
+
 #ifdef _HAS_DHT
     airTemp = dht.readTemperature();
     airHumidity = dht.readHumidity();
@@ -193,6 +243,9 @@ void loop() {
       ThingSpeak.setField(1, airTemp);
 #endif      
     }
+#ifdef _HAS_SSD1306
+      display.println("Temp: " + String(airTemp) + "C");
+#endif
     if(isnan(airHumidity)) {
       Serial.println("Error getting airHumidity");
       airHumidity = 0.0;
@@ -203,16 +256,19 @@ void loop() {
       ThingSpeak.setField(2, airHumidity);
 #endif      
     }
+#ifdef _HAS_SSD1306
+      display.println("Hum: " + String(airHumidity) + "%");
+#endif
 #endif
 #ifdef _HAS_DALLAS
     sensors.requestTemperatures();
     fluidTemp = sensors.getTempCByIndex(0);
-    if(isnan(fluidTemp)) {
+    if(isnan(fluidTemp) || fluidTemp < -10) {
       Serial.println("Error getting fluidTemp");
       fluidTemp = 0.0;
     }
     else {
-      Serial.println("Nutrient Temp: " + String(fluidTemp) + "C");
+      Serial.println("Nutr Temp: " + String(fluidTemp) + "C");
 #ifdef _HAS_THINGSPEAK
       ThingSpeak.setField(3, fluidTemp);
 #endif
@@ -223,6 +279,9 @@ void loop() {
         Serial.println("ALARM: HIGH NUTRIENT TEMPERATURE");
       }
     }
+#ifdef _HAS_SSD1306
+      display.println("Nutrient: " + String(fluidTemp) + "C");
+#endif
 #endif
 #ifdef _HAS_PH
     pH = (float)analogRead(PIN_PH);
@@ -235,9 +294,13 @@ void loop() {
 #ifdef _HAS_THINGSPEAK
       ThingSpeak.setField(4, pH);
 #endif
+#ifdef _HAS_SSD1306
+      display.println("pH: " + String(pH));
+#endif
       
     }
 #endif
+
 #ifdef _HAS_DALLAS
 #ifdef _HAS_EC
     eC = readEc(fluidTemp);
@@ -252,6 +315,9 @@ void loop() {
 #endif
       
     }
+#ifdef _HAS_SSD1306
+      display.println("Ec: " + String(eC));
+#endif
 #endif
 #endif
 #ifdef _HAS_VBATT
@@ -267,12 +333,27 @@ void loop() {
 #endif
       
     }
+#ifdef _HAS_SSD1306
+      display.println("vBatt: " + String(vBatt) + "V");
+#endif
 #endif
 #ifdef _HAS_THINGSPEAK
     int x = ThingSpeak.writeFields(channelId, writeApiKey);
     if(x != 200) {
       Serial.println("Error " + String(x) + " sending to ThingSpeak");
     }
+#endif
+#ifdef _HAS_SSD1306
+#ifdef _HAS_PUMP_RELAY
+  if(idlePump == 0) {
+    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE) ; // Reverse Text
+    display.println("Pump: ON");
+  }
+  else {
+    display.println("Pump: OFF");
+  }
+#endif
+    display.display();
 #endif
   }
   delay(1000);

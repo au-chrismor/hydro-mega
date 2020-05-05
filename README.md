@@ -1,7 +1,7 @@
 # Hydroponic Controller
 
 ## Introduction
-This code shows how to control an "Ebb and Flow" hydroponic installation using an Arduino Mega controller.
+This code shows how to control an "Ebb and Flow" (Also called "Flood and Drain") hydroponic installation using an Arduino Mega controller.
 
 Ebb and Flow is a very simple process where nutrient is sprayed into the growth medium and allowed to drain back to the main reservoir.  A typical duty cycle is 2 hours flood, followed by 15 minutes drain.
 
@@ -14,6 +14,7 @@ Timing does not require anything in the way of precision (within a minute is fin
 + Dallas 18B20 sensor in waterproof housing (also a 4K7 resistor)
 + Homebrew Ec probe (See References)
 + Relay Module(s)
++ SSD1306-based display
 
 ## Compiling
 First, decide which features you wish to use, because there are dependencies.  For example, you can't use ThingSpeak without a network connection, and you can't measure Ec without the 18B20 sensor.  Enabling and disabling a feature is a matter of updating sysconfig.h
