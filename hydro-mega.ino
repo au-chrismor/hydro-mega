@@ -143,7 +143,7 @@ void setPump(void) {
 #ifdef _DEBUG  
   Serial.println("Checking pump " + String(mins) + " min (" + String(idlePump) + ")");
 #endif  
-  if(idlePump == 0 && mins > _RUN_MINUTES) {
+  if(idlePump == 0 && mins > RUN_MINUTES) {
     idlePump = 1;
     Serial.println("Stop Pump");
     digitalWrite(PIN_PUMP, RLY_OFF);
@@ -152,7 +152,7 @@ void setPump(void) {
 #endif
     mins = 0;
   }
-  if(idlePump == 1 && mins > _IDLE_MINUTES) {
+  if(idlePump == 1 && mins > IDLE_MINUTES) {
     idlePump = 0;
     Serial.println("Start Pump");
     digitalWrite(PIN_PUMP, RLY_ON);
@@ -284,8 +284,8 @@ void loop() {
 #endif
 #endif
 #ifdef _HAS_PH
-    pH = (float)analogRead(PIN_PH);
-    if(isnan(pH)) {
+    pH = (float)analogRead(PIN_PH) / 1024.0 * 5.0 * 1.45;
+    if(isnan(pH) || pH < 0 || pH > 14) {
       Serial.println("Error getting pH");
       pH = 7.0;
     }
@@ -304,7 +304,7 @@ void loop() {
 #ifdef _HAS_DALLAS
 #ifdef _HAS_EC
     eC = readEc(fluidTemp);
-    if(isnan(eC)) {
+    if(isnan(eC) || eC < 0) {
       Serial.println("Error getting eC");
       eC = 0.0;
     }
@@ -321,7 +321,7 @@ void loop() {
 #endif
 #endif
 #ifdef _HAS_VBATT
-    vBatt = (float)analogRead(PIN_VBATT) / 1024 * 5.0 * batFactor;
+    vBatt = (float)analogRead(PIN_VBATT) / 1024 * batFactor;
     if(isnan(pH)) {
       Serial.println("Error getting vBatt");
       vBatt = 12.0;

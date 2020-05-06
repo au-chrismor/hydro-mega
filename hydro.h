@@ -22,15 +22,15 @@ EthernetClient(client);
 WiFiEspClient client;
 #endif
 #endif
-char ssid[] = "Emergent_Technology";
-char pass[] = "3F14AAE191504E309182163153";
+char ssid[] = "iot_wlan";
+char pass[] = "5uperSecr3tP4ssw0rD";
 #endif
 
 #ifdef _HAS_DHT
 #include <DHT.h>
 #include <DHT_U.h>
 #define DHT_PIN   3
-#define DHT_TYPE  DHT22
+#define DHT_TYPE  DHT11
 DHT dht(DHT_PIN, DHT_TYPE);
 #endif
 
@@ -68,7 +68,9 @@ int idlePump = 1;
 
 #ifdef _HAS_VBATT
 #define PIN_VBATT    A2
-float batFactor = 11.69;
+// Adjust this value to suit the output from your voltage divider
+// This works for R1 = 10K, R2 = 1K (gives .09)
+float batFactor = 35.556;
 #endif
 
 #ifdef _HAS_SSD1306
