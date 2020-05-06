@@ -1,7 +1,7 @@
 #include "sysconfig.h"
 #ifdef _HAS_THINGSPEAK
-unsigned long channelId = 12345678;
-const char *writeApiKey = "ABCDEF12345678";
+unsigned long channelId = 1;
+const char *writeApiKey = "XXXXXXXXXXXX";
 #include <ThingSpeak.h>
 #endif
 
@@ -22,8 +22,8 @@ EthernetClient(client);
 WiFiEspClient client;
 #endif
 #endif
-char ssid[] = "iot_wlan";
-char pass[] = "5uperSecr3tP4ssw0rD";
+char ssid[] = "SSID";
+char pass[] = "Password";
 #endif
 
 #ifdef _HAS_DHT
