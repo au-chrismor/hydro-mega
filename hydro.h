@@ -22,8 +22,8 @@ EthernetClient(client);
 WiFiEspClient client;
 #endif
 #endif
-char ssid[] = "SSID";
-char pass[] = "SecurePa5sw0rd!";
+char ssid[] = "Emergent_Technology";
+char pass[] = "3F14AAE191504E309182163153";
 #endif
 
 #ifdef _HAS_DHT
@@ -69,6 +69,20 @@ int idlePump = 1;
 #ifdef _HAS_VBATT
 #define PIN_VBATT    A2
 float batFactor = 11.69;
+#endif
+
+#ifdef _HAS_SSD1306
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+// Declaration for SSD1306 display connected using software SPI (default case):
+#define OLED_MOSI   9
+#define OLED_CLK   10
+#define OLED_DC    11
+#define OLED_CS    12
+#define OLED_RESET 13
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 #endif
 
 #define RLY_OFF HIGH
