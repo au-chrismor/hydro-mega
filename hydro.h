@@ -23,7 +23,7 @@ WiFiEspClient client;
 #endif
 #endif
 char ssid[] = "SSID";
-char pass[] = "Password";
+char pass[] = "PASSWORD";
 #endif
 
 #ifdef _HAS_DHT
@@ -85,6 +85,11 @@ float batFactor = 35.556;
 #define OLED_CS    12
 #define OLED_RESET 13
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+#endif
+
+#ifdef _HAS_DS1307
+#include <RTClib.h>
+RTC_DS1307 rtc;
 #endif
 
 #define RLY_OFF HIGH
