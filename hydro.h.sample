@@ -23,7 +23,7 @@ WiFiEspClient client;
 #endif
 #endif
 char ssid[] = "SSID";
-char pass[] = "PASSWORD";
+char pass[] = "Password";
 #endif
 
 #ifdef _HAS_DHT

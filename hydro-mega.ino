@@ -1,5 +1,5 @@
 /*
- * Copyright (C), 2000 Christopher F. Moran
+ * Copyright (C), 2020 Christopher F. Moran
  * This code controls a simple hydroponic pump for Ebb * Flow operation
  * 
  * It is intended to be modular, and features can be added or removed by
@@ -57,6 +57,9 @@ void setup() {
 #ifdef _HAS_VBATT
   Serial.println("Battery Voltage");
 #endif
+#ifdef _HAS_DS1307
+  Serial.println("DS1307 RTC");
+#endif
 #endif
   Serial.println("Starting up");
 
@@ -110,6 +113,21 @@ void setup() {
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
   display.println("Started OK");
   display.display();
+#endif
+
+#ifdef _HAS_DS1307
+  if(!rtc.begin()) {
+    Serial.println("Could not find DS1307 RTC");
+    while(true);  // Can't continue
+  }
+  if(!rtc.isrunning()) {
+    Serial.println("RTC is not running");
+    // Set date and time to last compile
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+#ifdef _HAS_SSD1306
+  display.println("RTC On");
+#endif
 #endif
 
 #ifdef _HAS_DHT
@@ -192,8 +210,20 @@ float readEc(float fluidTemp) {
 }
 #endif
 
+#ifdef _HAS_DS1307
+void printTime() {
+  char buffer[50];
+  DateTime now = rtc.now();
+  sprintf(buffer, "%4d/%02d/%02d %02d:%02d:%02d",now.year(),now.month(),now.day(),now.hour(),now.minute(),now.second());
+  Serial.println(buffer);
+}
+#endif
+
 
 void loop() {
+#ifdef _HAS_DS1307
+  printTime();
+#endif
 #ifdef _HAS_DHT
   float airHumidity = 0.0;
   float airTemp = 0.0;
